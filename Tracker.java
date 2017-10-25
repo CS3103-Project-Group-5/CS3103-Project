@@ -4,7 +4,6 @@ import java.util.*;
 
 class P2PTracker {
 
-	private long currentPeerID = 1;
 	private HashMap<Long, PeerInfo> peerMap = new HashMap<Long, PeerInfo>();
 	private HashMap<String, FileInfo> fileList = new HashMap<String, FileInfo>();
 
@@ -22,6 +21,7 @@ class P2PTracker {
 			ObjectInputStream ois = new ObjectInputStream(connectionSocket.getInputStream()); 
 			ObjectOutputStream oos = new ObjectOutputStream(connectionSocket.getOutputStream());
 			message = (TrackerMessage)ois.readObject(); //The first thing client sends to tracker is its own ip address for registration
+
 			
 		}
 	}
