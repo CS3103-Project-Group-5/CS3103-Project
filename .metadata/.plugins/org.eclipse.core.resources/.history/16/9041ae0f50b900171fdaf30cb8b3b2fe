@@ -21,8 +21,5 @@ public class PeerInfo {
 	public int getPeerPort(){
 		return this.peerPort;
 	}
-	public String getFileName(){
-		return this.fileName;
-	}
 	
 }

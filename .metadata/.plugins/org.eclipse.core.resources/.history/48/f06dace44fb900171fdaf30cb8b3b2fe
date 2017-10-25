@@ -3,13 +3,11 @@ public class PeerInfo {
 	private long peerID;
 	private String peerIP;
 	private int peerPort;
-	private String fileName;
 	
-	public PeerInfo(long peerID, String peerIP, int peerPort, String fileName){
+	public PeerInfo(long peerID, String peerIP, int peerPort){
 		this.peerID = peerID;
 		this.peerIP = peerIP;
 		this.peerPort = peerPort;
-		this.fileName = fileName;
 	}
 	
 	public long getPeerID(){
@@ -20,9 +18,6 @@ public class PeerInfo {
 	}
 	public int getPeerPort(){
 		return this.peerPort;
-	}
-	public String getFileName(){
-		return this.fileName;
 	}
 	
 }
