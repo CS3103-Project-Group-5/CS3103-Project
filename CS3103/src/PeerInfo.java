@@ -19,5 +19,4 @@ public class PeerInfo {
 	public int getPeerPort(){
 		return this.peerPort;
 	}
-	
 }

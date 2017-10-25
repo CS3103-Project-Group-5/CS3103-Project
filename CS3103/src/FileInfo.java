@@ -18,5 +18,4 @@ public class FileInfo {
 	public void deletePeerID(long peerID){
 		this.peerIDList.remove(peerID);
 	}
-	
 }
