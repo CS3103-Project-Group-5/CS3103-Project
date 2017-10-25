@@ -12,20 +12,17 @@ class P2PTracker {
 	public static void main(String[] args) throws IOException {
 		int port = 1234;
 		byte[] buffer = new byte[256];
+		TrackerMessage message;
 
 		ServerSocket welcomeSocket = new ServerSocket(port);
 
 		while (true) {
 			Socket connectionSocket = welcomeSocket.accept();
 			System.out.println("Connected to a client ... ");
-			BufferedInputStream bis = new BufferedInputStream(connectionSocket.getInputStream()); //process incoming bytes
-			BufferedOutputStream bos = new BufferedOutputStream(connectionSocket.getOutputStream()); //process outgoing bytes
-			bis.read(buffer); //The first thing client sends to tracker is its own ip address for registration
-			String IPAddressOfClient = buffer.getBytes().toString();
-			bos.write("ack".toBytes()); //send an ack
+			ObjectInputStream ois = new ObjectInputStream(connectionSocket.getInputStream()); 
+			ObjectOutputStream oos = new ObjectOutputStream(connectionSocket.getOutputStream());
+			message = (TrackerMessage)ois.readObject(); //The first thing client sends to tracker is its own ip address for registration
 			
-
-
 		}
 	}
 
