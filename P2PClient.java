@@ -23,13 +23,15 @@ class Tracker {
 
 	private static final String TRACKER_ADDRESS = "trackerIP";
 	private static final String TRACKER_PORT = "trackerPort";
-	private Socket socket;
+	private ObjectOutputStream out;
 
 	private Tracker() {
-		socket = new Socket(TRACKER_ADDRESS, TRACKER_PORT);
+		Socket socket = new Socket(TRACKER_ADDRESS, TRACKER_PORT);
+		out = new ObjectOutputStream(socket.getOutputStream());
 	}
-
-	private void send() {
+	
+	private void send(TrackerMessage msg) {
+		out.writeObject(msg);
 	}
 
 	private void receive() {
@@ -40,8 +42,9 @@ class Tracker {
 
 	public static getFileList() {
 		Tracker tracker = new Tracker();
-
-		tracker.send(query);
+		TrackerMessage msg = new TrackerMessage();
+		msg.setCmd(0);
+		tracker.send(msg); //0 - getFileList; 1 - download; 2 - upload
 	}
 
 }
