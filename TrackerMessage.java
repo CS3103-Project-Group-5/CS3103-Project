@@ -10,7 +10,7 @@ public class TrackerMessage {
 	private long peerID;
 	private String fileName;
 	private long fileSize;
-	private Set<PeerInfo> peerList;
+	private ArrayList<PeerInfo> peerList;
 	private Set<String> fileList;
 	
 	public TrackerMessage() {
@@ -32,7 +32,7 @@ public class TrackerMessage {
 		return this.fileSize;
 	}
 
-	public Set<PeerInfo> getPeerList() {
+	public ArrayList<PeerInfo> getPeerList() {
 		return this.peerList;
 	}
 
@@ -56,7 +56,7 @@ public class TrackerMessage {
 		this.fileSize = size;
 	}
 
-	public void setPeerList(Set<PeerInfo> list) {
+	public void setPeerList(ArrayList<PeerInfo> list) {
 		this.peerList = list;
 	}
 
