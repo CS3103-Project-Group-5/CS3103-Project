@@ -39,13 +39,15 @@ class P2PTracker {
 
 		switch(cmd) {			
 			case LIST: 
-				outgoingMessage.setFileList(new HashSet(fileList.keySet()));
+				outgoingMessage.setFileList(new HashSet<String>(fileList.keySet()));
 				break;
 
 			case DOWNLOAD:
 				String requestedFile = incomingMessage.getFileName();
 				ArrayList<PeerInfo> peerListToSend = getPeerInfoListToSend(requestedFile);
+				long requestedFileSize = getFileSize(requestedFile);
 				outgoingMessage.setPeerList(peerListToSend);
+				outgoingMessage.setFileSize(requestedFileSize);
 				createNewPeerRecord(peerID, new PeerInfo(peerID, peerIP, peerPort, requestedFile));				
 				associatePeerWithFile(peerID, requestedFile);
 				break;
@@ -79,6 +81,10 @@ class P2PTracker {
 		String targetFileName = targetPeer.getFileName();
 		FileInfo targetFileInfo = fileList.get(targetFileName);
 		targetFileInfo.deletePeerID(peerID);
+	}
+
+	private static long getFileSize(String fileName) {
+		return (fileList.get(fileName)).getFileSize();
 	}
 
 	private static ArrayList<PeerInfo> getPeerInfoListToSend(String fileName) {
