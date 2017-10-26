@@ -2,7 +2,11 @@ import java.util.*;
 
 public class TrackerMessage {
 
-	private int cmd; //0 - getFileList; 1 - download; 2 - upload
+	public enum MODE {
+		LIST, UPLOAD, DOWNLOAD
+	}
+
+	private MODE cmd; //0 - getFileList; 1 - download; 2 - upload
 	private long peerID;
 	private String fileName;
 	private long fileSize;
@@ -12,7 +16,7 @@ public class TrackerMessage {
 	public TrackerMessage() {
 	}
 
-	public int getCmd() {
+	public MODE getCmd() {
 		return this.cmd;
 	}
 	
@@ -36,7 +40,7 @@ public class TrackerMessage {
 		return this.fileList;
 	}
 
-	public void setCmd(int cmd) {
+	public void setCmd(MODE cmd) {
 		this.cmd = cmd;
 	}
 	

@@ -82,8 +82,10 @@ public class P2PClient {
 			new Peer();
 		}
 	}
+	*/
 }
 
+/*
 class Peer implements Thread {
 
 	

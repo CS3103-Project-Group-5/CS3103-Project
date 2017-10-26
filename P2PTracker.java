@@ -4,97 +4,100 @@ import java.util.*;
 
 class P2PTracker {
 
-	private HashMap<Long, PeerInfo> peerMap = new HashMap<Long, PeerInfo>();
-	private HashMap<String, FileInfo> fileList = new HashMap<String, FileInfo>();
-	private FINAL int NUM_PEERS_TO_SEND = 10;
+	private static HashMap<Long, PeerInfo> peerMap = new HashMap<Long, PeerInfo>();
+	private static HashMap<String, FileInfo> fileList = new HashMap<String, FileInfo>();
+	private static final int NUM_PEERS_TO_SEND = 10;
 
-
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		int port = 1234, clientPort;
 		String clientIP;
 		byte[] buffer = new byte[256];
 		TrackerMessage incomingMessage, outgoingMessage;
+		ObjectInputStream ois;
+		ObjectOutputStream oos;
 
 		ServerSocket welcomeSocket = new ServerSocket(port);
 
 		while (true) {
 			Socket connectionSocket = welcomeSocket.accept();
 			System.out.println("Connected to a client ... ");
-			ObjectInputStream ois = new ObjectInputStream(connectionSocket.getInputStream()); 
-			ObjectOutputStream oos = new ObjectOutputStream(connectionSocket.getOutputStream());
-			clientIP = connectionSocket.getHostAddress();
+			ois = new ObjectInputStream(connectionSocket.getInputStream()); 
+			oos = new ObjectOutputStream(connectionSocket.getOutputStream());
+			clientIP = (connectionSocket.getInetAddress()).getHostAddress();
 			clientPort = connectionSocket.getPort();
 
 			while (true) {
 			incomingMessage = (TrackerMessage)ois.readObject();
-			outgoingMessage = processMessage(incomingMessage);
-
+			outgoingMessage = processMessage(incomingMessage, clientIP, clientPort);
+			oos.writeObject(outgoingMessage);
 			}
-
-			
+//		ois.close();
+//		oos.close();			
 		}
 	}
 
-	private TrackerMessage processMessage(TrackerMessage incomingMessage, String peerIP, int peerPort) {
-		int cmd = incomingMessage.getCmd();
+	private static TrackerMessage processMessage(TrackerMessage incomingMessage, String peerIP, int peerPort) {
+		TrackerMessage.MODE cmd = incomingMessage.getCmd();
 		long peerID = incomingMessage.getPeerID();
-		outgoingMessage = new TrackerMessage();
+		TrackerMessage outgoingMessage = new TrackerMessage();
 
-		if (!clientInPeerMap) {
-			createNewPeerRecord()
-		}
-
-		switch(cmd) {
-			case 0: 
+		switch(cmd) {			
+			case LIST: 
 				outgoingMessage.setFileList(fileList.keySet());
 				break;
 
-			case 1:
+			case DOWNLOAD:
 				String requestedFile = incomingMessage.getFileName();
 				ArrayList<PeerInfo> peerListToSend = getPeerInfoListToSend(requestedFile);
 				outgoingMessage.setPeerList(peerListToSend);
+				createNewPeerRecord(peerID, new PeerInfo(peerID, peerIP, peerPort, requestedFile));				
 				associatePeerWithFile(peerID, requestedFile);
 				break;
 
-			case 2:
+			case UPLOAD: //no need to input any fields in the return message --> send an empty TrackerMessage object as ACK.
 				String newFileName = incomingMessage.getFileName();
-				int newFileSize = incomingMessage.getFileSize();
-
+				long newFileSize = incomingMessage.getFileSize();
+				createNewPeerRecord(peerID, new PeerInfo(peerID, peerIP, peerPort, newFileName));
+				createNewFileRecord(newFileName, new FileInfo(peerID, newFileSize));
+				break;
 		}
+		return outgoingMessage;
+	}
 	
 
-	private boolean clientInPeerMap(long peerID) {
-		returns peerMap.contains(peerID);
+	private static void createNewPeerRecord(long peerID, PeerInfo newPeer) {
+		peerMap.put(peerID, newPeer);
 	}
 
-	private void createNewPeerRecord(PeerInfo newPeer) {
-		peerMap.put(new Long(currentPeerID), newPeer);
+	private static void createNewFileRecord(String fileName, FileInfo newFile) {
+		fileList.put(fileName, newFile);
 	}
 
-	private void associatePeerWithFile(long peerID, String fileName) {
+	private static void associatePeerWithFile(long peerID, String fileName) {
 		FileInfo targetFile = fileList.get(fileName);
 		targetFile.addPeerID(peerID);
 	}
 
-	private void detachPeerFromFiles(long peerID) {
-		PeerInfo targetPeer = peerMap.get(new Long(PeerID));
+	private static void detachPeerFromFiles(long peerID) {
+		PeerInfo targetPeer = peerMap.get(new Long(peerID));
 		String targetFileName = targetPeer.getFileName();
 		FileInfo targetFileInfo = fileList.get(targetFileName);
 		targetFileInfo.deletePeerID(peerID);
 	}
 
-	private ArrayList<PeerInfo> getPeerInfoListToSend(String fileName) {
+	private static ArrayList<PeerInfo> getPeerInfoListToSend(String fileName) {
 		FileInfo requiredFile = fileList.get(fileName);
-		ArrayList<Long> peerIDList = Collections.shuffle(requiredFile.getPeerIDList());
+		ArrayList<Long> peerIDList = requiredFile.getPeerIDList();
+		Collections.shuffle(peerIDList);
 		ArrayList<PeerInfo> peerInfoList = new ArrayList<PeerInfo>();
 		int possibleNumPeerToSend = Math.min(peerIDList.size(), NUM_PEERS_TO_SEND);
-		for (int i = 0; possibleNumPeerToSend; i++) {
-			peerInfoList.add(peerMap.get(peerID.get(i)));
+		for (int i = 0; i <=possibleNumPeerToSend; i++) {
+			peerInfoList.add(peerMap.get(peerIDList.get(i)));
 		}
-		return peerInfoList
+		return peerInfoList;
 	}
 
-	private boolean peerIDListGreaterThanNumPeersToSend(int size) {
+	private static boolean peerIDListGreaterThanNumPeersToSend(int size) {
 		return size>NUM_PEERS_TO_SEND;
 	}
 }
