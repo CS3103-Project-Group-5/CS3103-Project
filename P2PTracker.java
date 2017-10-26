@@ -30,9 +30,9 @@ class P2PTracker {
 			incomingMessage = (TrackerMessage)ois.readObject();
 			outgoingMessage = processMessage(incomingMessage, clientIP, clientPort);
 			oos.writeObject(outgoingMessage);
-			}
-//		ois.close();
-//		oos.close();			
+			ois.close();
+			oos.close();	
+			}		
 		}
 	}
 
