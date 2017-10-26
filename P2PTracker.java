@@ -31,7 +31,8 @@ class P2PTracker {
 			outgoingMessage = processMessage(incomingMessage, clientIP, clientPort);
 			oos.writeObject(outgoingMessage);
 			ois.close();
-			oos.close();	
+			oos.close();
+			connectionSocket.close();
 			}		
 		}
 	}
