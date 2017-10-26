@@ -17,14 +17,14 @@ public class P2PClient {
 
 	private static TrackerMessage.MODE mode;
 	private static String fileName;
-	private static Set<PeerInfo> peerList;
+	private static ArrayList<PeerInfo> peerList;
 	private static long selfID;
 	private static long fileSize = -1;
 
 	public static void main(String[] args) {
 		String m = args[0];
 		try {
-			mode = MODE.valueOf(m.toUpperCase());
+			mode = TrackerMessage.MODE.valueOf(m.toUpperCase());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;
@@ -33,9 +33,11 @@ public class P2PClient {
 		if (mode.equals(TrackerMessage.MODE.LIST)) {
 			try {
 				printFileList(Tracker.getFileList());
+				return;
 			} catch (Exception e) {
 				System.out.println("Tracker error");
 				e.printStackTrace();
+				return;
 			}
 		}
 
@@ -43,10 +45,10 @@ public class P2PClient {
 		System.out.println("Initiating " + mode + " for file " + fileName);
 	
 		selfID = generateID();
-		int cmd = 1;
+		TrackerMessage.MODE cmd = TrackerMessage.MODE.LIST;
 
 		if (mode.equals(TrackerMessage.MODE.UPLOAD)) {
-			cmd = 2;
+			cmd = TrackerMessage.MODE.UPLOAD;
 			File file = new File(fileName);
 			if (!file.exists()) {
 				System.out.println("File not found, exiting...");
@@ -62,7 +64,7 @@ public class P2PClient {
 			e.printStackTrace();
 		}
 
-		start();
+		//start();
 	}
 
 	private static long generateID() {
@@ -95,8 +97,8 @@ class Peer implements Thread {
 
 class Tracker {
 
-	private static final String TRACKER_ADDRESS = "trackerIP";
-	private static final int TRACKER_PORT = 888;
+	private static final String TRACKER_ADDRESS = "128.199.108.79";
+	private static final int TRACKER_PORT = 1234;
 	private Socket socket;
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
@@ -116,29 +118,29 @@ class Tracker {
 	}
 
 	private TrackerMessage receive() throws Exception {
-		return (TrackerMessage)in.readObject();
+		TrackerMessage msg = (TrackerMessage)in.readObject();
+		close();
+		return msg;
 	}
 
-	public static Set<PeerInfo> getPeerList(int cmd, String fileName, long fileSize) throws Exception {
+	public static ArrayList<PeerInfo> getPeerList(TrackerMessage.MODE cmd, String fileName, long fileSize) throws Exception {
 		Tracker tracker = new Tracker();
 		TrackerMessage msg = new TrackerMessage();
 		msg.setCmd(cmd);
 		msg.setFileName(fileName);
-		if (cmd == 2) 
+		if (cmd.equals(TrackerMessage.MODE.UPLOAD)) 
 			msg.setFileSize(fileSize);
 		tracker.send(msg); //0 - getFileList; 1 - download; 2 - upload
-		Set<PeerInfo> list = tracker.receive().getPeerList();
-		tracker.close();
+		ArrayList<PeerInfo> list = tracker.receive().getPeerList();
 		return list;
 	}
 
 	public static Set<String> getFileList() throws Exception {
 		Tracker tracker = new Tracker();
 		TrackerMessage msg = new TrackerMessage();
-		msg.setCmd(0);
+		msg.setCmd(TrackerMessage.MODE.LIST);
 		tracker.send(msg); //0 - getFileList; 1 - download; 2 - upload
 		Set<String> list = tracker.receive().getFileList();
-		tracker.close();
 		return list;
 	}
 

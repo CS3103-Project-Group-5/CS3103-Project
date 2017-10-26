@@ -1,6 +1,7 @@
 import java.util.ArrayList;
+import java.io.*;
 
-public class FileInfo {
+public class FileInfo implements Serializable {
 	private ArrayList<Long> peerIDList = new ArrayList<Long>();
 	private int totalChunkNumber;
 	private long fileSize;

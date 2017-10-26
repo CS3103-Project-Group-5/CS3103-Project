@@ -1,5 +1,6 @@
+import java.io.*;
 
-public class PeerInfo {
+public class PeerInfo implements Serializable {
 	private long peerID;
 	private String peerIP;
 	private int peerPort;

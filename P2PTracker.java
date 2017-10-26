@@ -43,7 +43,7 @@ class P2PTracker {
 
 		switch(cmd) {			
 			case LIST: 
-				outgoingMessage.setFileList(fileList.keySet());
+				outgoingMessage.setFileList(new HashSet(fileList.keySet()));
 				break;
 
 			case DOWNLOAD:
