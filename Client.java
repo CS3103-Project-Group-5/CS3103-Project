@@ -17,7 +17,7 @@ public class P2PClient {
 
 		fileName = args[1];
 		System.out.println("Initiating " + mode + " for file " + fileName);
-	
+
 		selfID = generateID();
 
 		if (mode.equals("upload")) {
@@ -39,38 +39,4 @@ public class P2PClient {
 		Random rnd = new Random(506);
 		return rnd.nextLong();
 	}
-}
-
-class Tracker {
-
-	private static final String TRACKER_ADDRESS = "trackerIP";
-	private static final String TRACKER_PORT = "trackerPort";
-	private ObjectOutputStream out;
-
-	private Tracker() {
-		Socket socket = new Socket(TRACKER_ADDRESS, TRACKER_PORT);
-		out = new ObjectOutputStream(socket.getOutputStream());
-	}
-	
-	private void send(TrackerMessage msg) {
-		out.writeObject(msg);
-	}
-
-	private void receive() {
-	}
-
-	public static getPeerList() {
-		Tracker tracker = new Tracker();
-		TrackerMessage msg = new TrackerMessage();
-		msg.setCmd();
-		tracker.send(msg); //0 - getFileList; 1 - download; 2 - upload
-	}
-
-	public static getFileList() {
-		Tracker tracker = new Tracker();
-		TrackerMessage msg = new TrackerMessage();
-		msg.setCmd(0);
-		tracker.send(msg); //0 - getFileList; 1 - download; 2 - upload
-	}
-
 }
