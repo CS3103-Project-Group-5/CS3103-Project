@@ -26,14 +26,9 @@ class P2PTracker {
 			clientIP = (connectionSocket.getInetAddress()).getHostAddress();
 			clientPort = connectionSocket.getPort();
 
-			while (true) {
 			incomingMessage = (TrackerMessage)ois.readObject();
 			outgoingMessage = processMessage(incomingMessage, clientIP, clientPort);
-			oos.writeObject(outgoingMessage);
-			ois.close();
-			oos.close();
-			connectionSocket.close();
-			}		
+			oos.writeObject(outgoingMessage);		
 		}
 	}
 
