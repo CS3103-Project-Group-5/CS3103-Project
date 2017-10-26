@@ -5,8 +5,8 @@ public class TrackerMessage {
 	private int cmd; //0 - getFileList; 1 - download; 2 - upload
 	private long peerID;
 	private String fileName;
-	private int fileSize;
-	private ArrayList<PeerInfo> peerList;
+	private long fileSize;
+	private Set<PeerInfo> peerList;
 	private Set<String> fileList;
 	
 	public TrackerMessage() {
@@ -24,11 +24,11 @@ public class TrackerMessage {
 		return this.fileName;
 	}
 
-	public int getFileSize() {
+	public long getFileSize() {
 		return this.fileSize;
 	}
 
-	public ArrayList<PeerInfo> getPeerList() {
+	public Set<PeerInfo> getPeerList() {
 		return this.peerList;
 	}
 
@@ -48,11 +48,11 @@ public class TrackerMessage {
 		this.fileName = name;
 	}
 
-	public void setFileSize(int size) {
+	public void setFileSize(long size) {
 		this.fileSize = size;
 	}
 
-	public void setPeerList(ArrayList<PeerInfo> list) {
+	public void setPeerList(Set<PeerInfo> list) {
 		this.peerList = list;
 	}
 
