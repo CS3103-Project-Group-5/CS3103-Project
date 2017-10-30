@@ -3,19 +3,19 @@ import java.net.InetAddress;
 import java.util.*;
 
 public class Client {
-    private final UUID TRACKER_ID = UUID.randomUUID();
-    private final InetAddress TRACKER_IP = InetAddress.getByName("%TRACKER_IP%");
-    private final int TRACKER_PORT = 1234;
+//    private final UUID TRACKER_ID = UUID.randomUUID();
+    //private final InetAddress TRACKER_IP = InetAddress.getByName("%TRACKER_IP%");
+//    private final int TRACKER_PORT = 1234;
 
-    private UUID myID;
-    private NetworkManager networkManager;
+ //   private UUID myID;
+//    private NetworkManager networkManager;
 
-    public Client() throws Exception{
+    public static void main(String[] args) throws Exception{
         // Generate unique ID
-        myID = UUID.randomUUID();
+//        myID = UUID.randomUUID();
 
         // Init aux var
-        networkManager = new NetworkManager();
+        // networkManager = new NetworkManager();
 
         Scanner scanner = new Scanner (System.in);
 
@@ -35,7 +35,14 @@ public class Client {
             System.out.println("4. Inform availability of a new file.\n");
             System.out.println("5. Exit.\n");
 
-            option = scanner.nextInt();
+			try {
+            	option = scanner.nextInt();
+				scanner.nextLine();
+			} catch (Exception e) {
+				System.out.println("Please enter a valid command.");
+				scanner.nextLine();
+				continue;
+			}
             switch (option) {
                 case 1:
                     try {
@@ -69,14 +76,13 @@ public class Client {
                     File file = new File(input);
                     if (!file.exists()) {
                         System.out.println("File not found, exiting...");
-                        return;
+                        break;
                     }
                     fileSize = file.length();
                     chunkList = new BitSet((int)Math.ceil(fileSize / (double)chunkSize));
                     chunkList.flip(0, chunkList.length());
                     TrackerManager.initializeUpload(input, fileSize);
                     break;
-
 
             }
         }

@@ -36,6 +36,7 @@ class P2PTracker {
 		TrackerMessage.MODE cmd = incomingMessage.getCmd();
 		long peerID = incomingMessage.getPeerID();
 		TrackerMessage outgoingMessage = new TrackerMessage();
+		String requestedFile;
 
 		switch(cmd) {			
 			case FILELIST:
@@ -43,14 +44,14 @@ class P2PTracker {
 				break;
                 
             case FILEINFO:
-                String requestedFile = incomingMessage.getFileName();
+                requestedFile = incomingMessage.getFileName();
                 long fileSize = getFileSize(requestedFile);
                 outgoingMessage.setFileSize(fileSize);
-                outgoingMessage.setFileName(requestedFile)
+                outgoingMessage.setFileName(requestedFile);
                 break;
 
 			case DOWNLOAD:
-				String requestedFile = incomingMessage.getFileName();
+				requestedFile = incomingMessage.getFileName();
 				ArrayList<PeerInfo> peerListToSend = getPeerInfoListToSend(requestedFile);
 				long requestedFileSize = getFileSize(requestedFile);
 				outgoingMessage.setPeerList(peerListToSend);
