@@ -1,5 +1,8 @@
 public enum MessageType {
-    DirectoryListingRequest(0);
+    UpdatedChunklistRequest(0),
+    ChunkRequest(1),
+    ChunkData(2);
+
 
     private int value;
     MessageType(int value) {
@@ -13,7 +16,11 @@ public enum MessageType {
     public static MessageType fromInteger(int value) {
         switch(value) {
             case 0:
-                return DirectoryListingRequest;
+                return UpdatedChunklistRequest;
+            case 1:
+                return ChunkRequest;
+            case 2:
+                return ChunkData;
         }
         return null;
     }

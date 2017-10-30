@@ -2,7 +2,7 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 
-public class P2PClient {
+/*public class TrackerManager {
 
 /* Usage
 	java P2PClient list 
@@ -13,7 +13,7 @@ public class P2PClient {
 	java P2PClient download hisfile
 		- return a list of peers to download from
 		- download
-*/
+
 
 	private static TrackerMessage.MODE mode;
 	private static String fileName;
@@ -34,7 +34,7 @@ public class P2PClient {
 			return;
 		}
 
-		if (mode.equals(TrackerMessage.MODE.LIST)) {
+		if (mode.equals(TrackerMessage.MODE.FILELIST)) {
 			try {
 				printFileList(Tracker.getFileList());
 				return;
@@ -49,7 +49,7 @@ public class P2PClient {
 		System.out.println("Initiating " + mode + " for file " + fileName);
 	
 		selfID = generateID();
-		TrackerMessage.MODE cmd = TrackerMessage.MODE.LIST;
+		TrackerMessage.MODE cmd = TrackerMessage.MODE.FILELIST;
 
 		try {
 			if (mode.equals(TrackerMessage.MODE.UPLOAD)) {
@@ -68,6 +68,7 @@ public class P2PClient {
 				fileSize = msg.getFileSize();
 				peerList = msg.getPeerList();
 				chunkList = new BitSet((int)Math.ceil(fileSize / (double)chunkSize)); // <-- need to load file status from disk
+
 			}
 		} catch (Exception e) {
 			System.out.println("Tracker error");
@@ -90,7 +91,7 @@ public class P2PClient {
 		}
 	}
 
-	private static void start(ArrayList<PeerInfo> list) {
+/*	private static void start(ArrayList<PeerInfo> list) {
 		for (PeerInfo info : list) {
 			try {
 				new Thread(new Peer(new Socket(info.getPeerIP(), info.getPeerPort()))).start();
@@ -98,7 +99,6 @@ public class P2PClient {
 				e.printStackTrace();
 				continue;
 			}
-		}
 
 		ServerSocket welcomeSocket;
 		try {
@@ -166,9 +166,9 @@ public class P2PClient {
 		}
 	}
 
-}
+} */
 
-class Tracker {
+public class TrackerManager {
 
 	private static final String TRACKER_ADDRESS = "128.199.108.79";
 	private static final int TRACKER_PORT = 1234;
@@ -176,7 +176,7 @@ class Tracker {
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
 
-	private Tracker() throws Exception {
+	private TrackerManager() throws Exception {
 		socket = new Socket(TRACKER_ADDRESS, TRACKER_PORT);
 		out = new ObjectOutputStream(socket.getOutputStream());
 		in = new ObjectInputStream(socket.getInputStream());
@@ -196,32 +196,42 @@ class Tracker {
 		return msg;
 	}
 
-	public static void initializeUpload(TrackerMessage.MODE cmd, String fileName, long fileSize) throws Exception {
-		Tracker tracker = new Tracker();
+	public static void initializeUpload(String fileName, long fileSize) throws Exception {
+		TrackerManager tracker = new TrackerManager();
 		TrackerMessage msg = new TrackerMessage();
-		msg.setCmd(cmd);
+		msg.setCmd(TrackerMessage.MODE.UPLOAD);
 		msg.setFileName(fileName);
 		msg.setFileSize(fileSize);
 		tracker.send(msg); //0 - getFileList; 1 - download; 2 - upload
 		tracker.receive();
 	}
 
-	public static TrackerMessage getDownloadInfo(TrackerMessage.MODE cmd, String fileName) throws Exception {
-		Tracker tracker = new Tracker();
+	public static TrackerMessage getDownloadInfo(String fileName) throws Exception {
+		TrackerManager tracker = new TrackerManager();
 		TrackerMessage msg = new TrackerMessage();
-		msg.setCmd(cmd);
+		msg.setCmd(TrackerMessage.MODE.DOWNLOAD);
 		msg.setFileName(fileName);
 		tracker.send(msg); //0 - getFileList; 1 - download; 2 - upload
 		return tracker.receive();
 	}
 
 	public static Set<String> getFileList() throws Exception {
-		Tracker tracker = new Tracker();
+		TrackerManager tracker = new TrackerManager();
 		TrackerMessage msg = new TrackerMessage();
-		msg.setCmd(TrackerMessage.MODE.LIST);
+		msg.setCmd(TrackerMessage.MODE.FILELIST);
 		tracker.send(msg); //0 - getFileList; 1 - download; 2 - upload
 		Set<String> list = tracker.receive().getFileList();
 		return list;
+	}
+
+	public static long getFileSize(String fileName) throws Exception {
+		TrackerManager tracker = new TrackerManager();
+		TrackerMessage msg = new TrackerMessage();
+		msg.setCmd(TrackerMessage.MODE.FILEINFO);
+		msg.setFileName(fileName);
+		tracker.send(msg);
+		long fileSize = tracker.receive().getFileSize();
+		return fileSize;
 	}
 
 }
