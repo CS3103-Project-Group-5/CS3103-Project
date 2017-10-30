@@ -4,7 +4,7 @@ import java.io.*;
 public class TrackerMessage implements Serializable {
 
 	public enum MODE {
-		LIST, UPLOAD, DOWNLOAD
+		FILELIST, FILEINFO, UPLOAD, DOWNLOAD
 	}
 
 	private MODE cmd; //0 - getFileList; 1 - download; 2 - upload
