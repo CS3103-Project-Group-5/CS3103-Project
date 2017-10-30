@@ -38,9 +38,16 @@ class P2PTracker {
 		TrackerMessage outgoingMessage = new TrackerMessage();
 
 		switch(cmd) {			
-			case LIST: 
+			case FILELIST:
 				outgoingMessage.setFileList(new HashSet<String>(fileList.keySet()));
 				break;
+                
+            case FILEINFO:
+                String requestedFile = incomingMessage.getFileName();
+                long fileSize = getFileSize(requestedFile);
+                outgoingMessage.setFileSize(fileSize);
+                outgoingMessage.setFileName(requestedFile)
+                break;
 
 			case DOWNLOAD:
 				String requestedFile = incomingMessage.getFileName();
@@ -98,6 +105,7 @@ class P2PTracker {
 		}
 		return peerInfoList;
 	}
+    
 
 	private static boolean peerIDListGreaterThanNumPeersToSend(int size) {
 		return size>NUM_PEERS_TO_SEND;
